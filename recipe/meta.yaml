@@ -24,8 +24,9 @@ requirements:
     - cmake
     - make                    # [unix]
     - {{ compiler('cxx') }}
-    - llvmdev {{ version }}  # [build_platform != target_platform]
-  host:
+    - patch       # [not win]
+    - m2-patch    # [win]
+   host:
     - llvmdev {{ version }}
     - llvm {{ version }}
 
