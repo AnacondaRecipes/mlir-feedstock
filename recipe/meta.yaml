@@ -34,6 +34,9 @@ outputs:
   - name: mlir
     script: install_mlir.sh  # [unix]
     script: install_mlir.bat  # [win]
+    build:
+      missing_dso_whitelist:  # [linux and s390x]
+        - $RPATH/ld64.so.1    # [linux and s390x]
     requirements:
       build:
         - {{ compiler('cxx') }}
