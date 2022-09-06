@@ -1,4 +1,4 @@
-{% set version = "12.0.0" %}
+{% set version = "14.0.6" %}
 {% set major_version = version.split(".")[0] %}
 
 package:
@@ -7,28 +7,28 @@ package:
 
 source:
   - url: https://github.com/llvm/llvm-project/releases/download/llvmorg-{{ version.replace(".rc", "-rc") }}/llvm-project-{{ version.replace(".rc", "rc") }}.src.tar.xz
-    sha256: 9ed1688943a4402d7c904cc4515798cdb20080066efa010fe7e1f2551b423628
+    sha256: 8b3cfd7bc695bd6cea0f37f53f0981f34f87496e79e2529874fd03a2f9dd3a8a
     patches:
-      # https://reviews.llvm.org/D85464
-      - out-of-tree.diff
-      # https://reviews.llvm.org/D94598
-      # - mlir-cross.patch
       # https://reviews.llvm.org/D99470
-      # - mlir-cross-standalone.patch
+      - 0001-Support-cross-compiling-standalone-MLIR.patch
+      # https://github.com/llvm/llvm-project/issues/53989
+      - 0002-Revert-Disable-the-MLIR-ExecutionEngine-library-when.patch
 
 build:
-  number: 1
+  number: 0
 
 requirements:
   build:
     - cmake
-    - make                    # [unix]
+    - ninja
     - {{ compiler('cxx') }}
+    - llvmdev {{ version }}  # [build_platform != target_platform]
     - patch       # [not win]
     - m2-patch    # [win]
   host:
     - llvmdev {{ version }}
     - llvm {{ version }}
+    - zlib
 
 outputs:
   - name: mlir
@@ -38,20 +38,21 @@ outputs:
       build:
         - {{ compiler('cxx') }}
         - cmake
-        - ninja  # [win]
-        - make   # [unix]
+        - ninja
         - llvmdev {{ version }}    # [build_platform != target_platform]
       host:
         - {{ pin_subpackage("libmlir", exact=True) }}
         - llvmdev {{ version }}
+        - llvm {{ version }}
+        - zlib
       run:
         - {{ pin_subpackage("libmlir", exact=True) }}
         - llvmdev {{ version }}
     test:
       commands:
-        - test -f "$PREFIX/include/mlir-c/IR.h"                  # [unix]
+        - test -f "$PREFIX/include/mlir-c/Support.h"               # [unix]
         - test -f "$PREFIX/lib/libMLIRIR.a"                        # [unix]
-        - if not exist %LIBRARY_INC%\\mlir-c\\IR.h exit 1        # [win]
+        - if not exist %LIBRARY_INC%\\mlir-c\\Support.h exit 1     # [win]
         - if not exist %LIBRARY_LIB%\\MLIRIR.lib exit 1            # [win]
         - $PREFIX/bin/mlir-opt -version                            # [not win]
         - if not exist "%LIBRARY_BIN%"\\mlir-opt.exe exit 1        # [win]
@@ -68,12 +69,12 @@ outputs:
       build:
         - {{ compiler('cxx') }}
         - cmake
-        - ninja  # [win]
-        - make   # [unix]
+        - ninja
         - llvmdev {{ version }}    # [build_platform != target_platform]
       host:
         - llvmdev {{ version }}
         - llvm {{ version }}
+        - zlib
     test:
       commands:
         - test ! -f "$PREFIX/lib/libMLIR$SHLIB_EXT"                                # [unix]
@@ -98,12 +99,12 @@ outputs:
       build:
         - {{ compiler('cxx') }}
         - cmake
-        - ninja  # [win]
-        - make   # [unix]
+        - ninja
         - llvmdev {{ version }}    # [build_platform != target_platform]
       host:
         - llvmdev {{ version }}
         - llvm {{ version }}
+        - zlib
         - {{ pin_subpackage("libmlir" + major_version, exact=True) }}  # [unix]
       run:
         - {{ pin_subpackage("libmlir" + major_version, exact=True) }}  # [unix]
