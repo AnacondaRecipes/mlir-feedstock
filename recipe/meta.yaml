@@ -114,15 +114,18 @@ outputs:
         - if exist %LIBRARY_BIN%\\libmlir.dll exit 1           # [win]
 
 about:
-  home: http://llvm.org/
+  home: https://llvm.org/
   license: Apache-2.0 WITH LLVM-exception
   license_file: mlir/LICENSE.TXT
   license_family: Apache
   summary: Multi-Level IR Compiler Framework
+  dev_url: https://github.com/llvm/llvm-project
+  doc_url: https://llvm.org/docs/
 
 extra:
   recipe-maintainers:
     - isuruf
     - kaushikcfd
+    - katietz
     - xhochy
   feedstock-name: mlir
