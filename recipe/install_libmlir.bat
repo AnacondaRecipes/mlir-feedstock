@@ -1,1 +1,3 @@
-echo "not supported ..."
+cd ${SRC_DIR}\build
+ninja install
+
