@@ -22,7 +22,6 @@ requirements:
     - cmake
     - ninja
     - {{ compiler('cxx') }}
-    - llvmdev {{ version }}  # [build_platform != target_platform]
     - patch       # [not win]
     - m2-patch    # [win]
   host:
@@ -42,7 +41,6 @@ outputs:
         - {{ compiler('cxx') }}
         - cmake
         - ninja
-        - llvmdev {{ version }}    # [build_platform != target_platform]
       host:
         - {{ pin_subpackage("libmlir", exact=True) }}
         - llvmdev {{ version }}
@@ -63,7 +61,8 @@ outputs:
         - mlir-tblgen -version
 
   - name: libmlir{{ major_version }}
-    script: install_libmlir.sh  # [unix]
+    script: install_libmlir.sh   # [unix]
+    script: install_libmlir.bat  # [win]
     build:
       run_exports:
         - {{ pin_subpackage("libmlir" + major_version, max_pin="x.x") }}   # [unix]
@@ -73,7 +72,6 @@ outputs:
         - {{ compiler('cxx') }}
         - cmake
         - ninja
-        - llvmdev {{ version }}    # [build_platform != target_platform]
       host:
         - llvmdev {{ version }}
         - llvm {{ version }}
@@ -103,7 +101,6 @@ outputs:
         - {{ compiler('cxx') }}
         - cmake
         - ninja
-        - llvmdev {{ version }}    # [build_platform != target_platform]
       host:
         - llvmdev {{ version }}
         - llvm {{ version }}
