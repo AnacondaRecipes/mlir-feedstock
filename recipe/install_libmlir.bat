@@ -1,3 +1,3 @@
-cd ${SRC_DIR}\build
+cd %SRC_DIR%\build
 ninja install
 
