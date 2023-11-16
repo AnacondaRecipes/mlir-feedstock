@@ -62,7 +62,7 @@ outputs:
         - if not exist %LIBRARY_INC%\mlir-c\Support.h exit 1    # [win]
 
         # binaries
-         - mlir-tblgen -version
+        - mlir-tblgen -version
         - $PREFIX/bin/mlir-opt -version                         # [unix]
         - if not exist "%LIBRARY_BIN%"\mlir-opt.exe exit 1      # [win]
         - mlir-opt -version                                     # [win]
