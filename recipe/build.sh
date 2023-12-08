@@ -2,10 +2,7 @@
 
 set -euxo pipefail
 
-if [[ "${target_platform}" == "linux-ppc64le" ]]; then
-  export CFLAGS="${CFLAGS//-fno-plt/}"
-  export CXXFLAGS="${CXXFLAGS//-fno-plt/}"
-elif [[ "${target_platform}" == osx-* ]]; then
+if [[ "${target_platform}" == osx-* ]]; then
     CMAKE_ARGS="$CMAKE_ARGS -DLLVM_ENABLE_LIBCXX=ON"
 fi
 
