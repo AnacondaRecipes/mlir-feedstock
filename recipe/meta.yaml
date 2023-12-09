@@ -7,7 +7,7 @@ package:
 
 source:
   - url: https://github.com/llvm/llvm-project/releases/download/llvmorg-{{ version.replace(".rc", "-rc") }}/llvm-project-{{ version.replace(".rc", "rc") }}.src.tar.xz
-    sha256: a225eb96f52e7d8c6c275b351fcc66d7a21d925eecff53730900404f244ff16a
+    sha256: 58a8818c60e6627064f312dbf46c02d9949956558340938b71cf731ad8bc0813
 
 build:
   number: 0
@@ -42,6 +42,7 @@ outputs:
       run:
         - {{ pin_subpackage("libmlir", exact=True) }}
         - llvmdev {{ version }}
+        - libcxx >={{ cxx_compiler_version }}  # [osx]
     test:
       commands:
         # static library
@@ -65,6 +66,8 @@ outputs:
       run_exports:
         - {{ pin_subpackage("libmlir" ~ major_version, max_pin="x.x") }}   # [unix]
       skip: true  # [win]
+      missing_dso_whitelist:  # [s390x]
+        - $RPATH/ld64.so.1    # [s390x]
     requirements:
       build:
         - {{ compiler('cxx') }}
@@ -94,10 +97,10 @@ outputs:
     script: install_libmlir.sh   # [unix]
     script: install_libmlir.bat  # [win]
     build:
-      {% if not win %}
       run_exports:   # [unix]
         - {{ pin_subpackage("libmlir" ~ major_version, max_pin="x.x") }}   # [unix]
-      {% endif %}
+      missing_dso_whitelist:  # [s390x]
+        - $RPATH/ld64.so.1    # [s390x]
     requirements:
       build:
         - {{ compiler('cxx') }}
