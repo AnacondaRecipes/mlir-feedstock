@@ -83,15 +83,21 @@ outputs:
         - test -f "$PREFIX/lib/libMLIR.so.{{ major_version }}"                     # [linux]
         - test -f "$PREFIX/lib/libmlir_runner_utils.so.{{ major_version }}"        # [linux]
         - test -f "$PREFIX/lib/libmlir_c_runner_utils.so.{{ major_version }}"      # [linux]
+        - test -f "$PREFIX/lib/libmlir_async_runtime.so.{{ major_version }}"       # [linux]
+        - test -f "$PREFIX/lib/libmlir_float16_utils.so.{{ major_version }}"        # [linux]
         - test -f "$PREFIX/lib/libMLIR.{{ major_version }}.dylib"                  # [osx]
         - test -f "$PREFIX/lib/libmlir_runner_utils.{{ major_version }}.dylib"     # [osx]
         - test -f "$PREFIX/lib/libmlir_c_runner_utils.{{ major_version }}.dylib"   # [osx]
+        - test -f "$PREFIX/lib/libmlir_async_runtime.{{ major_version }}.dylib"    # [osx]
+        - test -f "$PREFIX/lib/libmlir_float16_utils.{{ major_version }}.dylib"     # [osx]
 
         # absence of unversioned libraries
         - test ! -f "$PREFIX/lib/libMLIR$SHLIB_EXT"                   # [unix]
         - test ! -f "$PREFIX/lib/libmlir_runner_utils$SHLIB_EXT"      # [unix]
         - test ! -f "$PREFIX/lib/libmlir_c_runner_utils$SHLIB_EXT"    # [unix]
         - test ! -f "$PREFIX/lib/libmlir_c_runner_utils_static.a"     # [unix]
+        - test ! -f "$PREFIX/lib/libmlir_async_runtime$SHLIB_EXT"     # [unix]
+        - test ! -f "$PREFIX/lib/libmlir_float16_utils$SHLIB_EXT"      # [unix]
 
   - name: libmlir
     script: install_libmlir.sh   # [unix]
