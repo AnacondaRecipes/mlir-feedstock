@@ -76,6 +76,7 @@ outputs:
       host:
         - llvmdev {{ version }}
         - llvm {{ version }}
+        - libcxx {{ cxx_compiler_version }}  # [osx]
         - zlib
     test:
       commands:
