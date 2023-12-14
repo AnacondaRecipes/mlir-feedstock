@@ -17,10 +17,12 @@ requirements:
     - cmake
     - ninja
     - {{ compiler('cxx') }}
+    - libcxx {{ cxx_compiler_version }}  # [osx]
   host:
     - llvmdev {{ version }}
     - llvm {{ version }}
     - zlib
+    - libcxx {{ cxx_compiler_version }}  # [osx]
 
 outputs:
   - name: mlir
@@ -76,8 +78,10 @@ outputs:
       host:
         - llvmdev {{ version }}
         - llvm {{ version }}
-        - libcxx {{ cxx_compiler_version }}  # [osx]
         - zlib
+        - libcxx {{ cxx_compiler_version }}  # [osx]
+      run:
+        - libcxx >={{ cxx_compiler_version }}  # [osx]
     test:
       commands:
         # presence of versioned libraries
