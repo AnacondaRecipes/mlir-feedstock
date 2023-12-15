@@ -28,7 +28,13 @@ cmake ${CMAKE_ARGS} \
   -DLLVM_BUILD_TOOLS=ON \
   -DLLVM_BUILD_UTILS=ON \
   -DCMAKE_POLICY_DEFAULT_CMP0111=NEW \
+  -DLLVM_CCACHE_BUILD=ON \
   -GNinja \
   ../mlir
 
-ninja
+cmake --build . -- -j${CPU_COUNT}
+
+cmake --build . --target check-mlir -- -j${CPU_COUNT}
+
+cd ../mlir/test
+${PYTHON} ../../build/bin/llvm-lit -vv Transforms Analysis IR

@@ -17,6 +17,7 @@ requirements:
     - cmake
     - ninja
     - {{ compiler('cxx') }}
+    - ccache
   host:
     - llvmdev {{ version }}
     - llvm {{ version }}

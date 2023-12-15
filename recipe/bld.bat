@@ -16,5 +16,10 @@ cmake -GNinja ^
   ..\mlir
 if %ERRORLEVEL% neq 0 exit 1
 
-ninja -j%CPU_COUNT%
+cmake --build .
 if %ERRORLEVEL% neq 0 exit 1
+
+cmake --build . --target check-mlir
+
+cd ..\mlir\test
+%BUILD_PREFIX%\python.exe ..\..\build\bin\llvm-lit.py -vv Transforms Analysis IR
