@@ -129,6 +129,8 @@ outputs:
       run:
         - {{ pin_subpackage("libmlir" ~ major_version, exact=True) }}  # [unix]
         - libcxx >={{ cxx_compiler_version }}  # [osx]
+        # this will probably be removed when the install scripts are tidied
+        - zlib # [win]
     test:
       commands:
         # presence of unversioned libraries

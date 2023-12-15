@@ -12,17 +12,17 @@ set -x -e
 mkdir temp_prefix
 cmake --install ./build --prefix=./temp_prefix
 if [[ "$PKG_NAME" == "libmlir" ]]; then
-    mv ./temp_prefix/libMLIR${SHLIB_EXT} $PREFIX/lib
-    mv ./temp_prefix/libmlir_runner_utils${SHLIB_EXT} $PREFIX/lib
-    mv ./temp_prefix/libmlir_c_runner_utils${SHLIB_EXT} $PREFIX/lib
-    mv ./temp_prefix/libmlir_async_runtime${SHLIB_EXT} $PREFIX/lib
-    mv ./temp_prefix/libmlir_float16_utils${SHLIB_EXT} $PREFIX/lib
+    mv ./temp_prefix/lib/libMLIR${SHLIB_EXT} $PREFIX/lib
+    mv ./temp_prefix/lib/libmlir_runner_utils${SHLIB_EXT} $PREFIX/lib
+    mv ./temp_prefix/lib/libmlir_c_runner_utils${SHLIB_EXT} $PREFIX/lib
+    mv ./temp_prefix/lib/libmlir_async_runtime${SHLIB_EXT} $PREFIX/lib
+    mv ./temp_prefix/lib/libmlir_float16_utils${SHLIB_EXT} $PREFIX/lib
 else
-    mv ./temp_prefix/libMLIR.*.* $PREFIX/lib
-    mv ./temp_prefix/libmlir_runner_utils.*.* $PREFIX/lib
-    mv ./temp_prefix/libmlir_c_runner_utils.*.* $PREFIX/lib
-    mv ./temp_prefix/libmlir_async_runtime.*.* $PREFIX/lib
-    mv ./temp_prefix/libmlir_float16_utils.*.* $PREFIX/lib
+    mv ./temp_prefix/lib/libMLIR.*.* $PREFIX/lib
+    mv ./temp_prefix/lib/libmlir_runner_utils.*.* $PREFIX/lib
+    mv ./temp_prefix/lib/libmlir_c_runner_utils.*.* $PREFIX/lib
+    mv ./temp_prefix/lib/libmlir_async_runtime.*.* $PREFIX/lib
+    mv ./temp_prefix/lib/libmlir_float16_utils.*.* $PREFIX/lib
 fi
 rm -rf temp_prefix
 
