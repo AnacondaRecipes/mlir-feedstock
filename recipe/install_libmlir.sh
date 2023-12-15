@@ -11,7 +11,7 @@ set -x -e
 # mv lib2/libLLVM* lib/
 mkdir temp_prefix
 cmake --install ./build --prefix=./temp_prefix
-if [[ "$PKG_NAME" == "libmlir" ]]; then   
+if [[ "$PKG_NAME" == "libmlir" ]]; then
     mv ./temp_prefix/libMLIR${SHLIB_EXT} $PREFIX/lib
     mv ./temp_prefix/libmlir_runner_utils${SHLIB_EXT} $PREFIX/lib
     mv ./temp_prefix/libmlir_c_runner_utils${SHLIB_EXT} $PREFIX/lib
