@@ -8,6 +8,7 @@ cmake -GNinja ^
   -DCMAKE_INSTALL_PREFIX=%LIBRARY_PREFIX% ^
   -DLLVM_USE_INTEL_JITEVENTS=ON ^
   -DLLVM_ENABLE_RTTI=ON ^
+  -DLLVM_EXTERNAL_LIT=%BUILD_PREFIX%\bin\llvm-lit ^
   -DMLIR_INCLUDE_DOCS=OFF ^
   -DMLIR_INCLUDE_TESTS=ON ^
   -DMLIR_INCLUDE_INTEGRATION_TESTS=ON ^
@@ -17,10 +18,12 @@ cmake -GNinja ^
   ..\mlir
 if %ERRORLEVEL% neq 0 exit 1
 
-cmake --build .
+cmake --build . -- -j%CPU_COUNT%
 if %ERRORLEVEL% neq 0 exit 1
 
-cmake --build . --target check-mlir
+REM this is where lit expects to find helper tools. Perhaps they should be put here while building llvm.
+cp %PREFIX%\libexec\llvm\* %PREFIX%\bin
+cmake --build . --target check-mlir -- -j%CPU_COUNT%
 
 cd ..\mlir\test
-%BUILD_PREFIX%\python.exe ..\..\build\bin\llvm-lit.py -vv Transforms Analysis IR
+%BUILD_PREFIX%\python.exe %BUILD_PREFIX%\bin\llvm-lit.py -vv Transforms Analysis IR

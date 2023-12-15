@@ -17,13 +17,16 @@ requirements:
     - cmake
     - ninja
     - {{ compiler('cxx') }}
-    - lit
+    # both of these required to run testing
+    - lit     {{ version }}
+    - llvmdev {{ version }}
   host:
     - llvmdev {{ version }}
     - llvm {{ version }}
     - zlib
 
 outputs:
+  # On windows, libmlir contains everything and mlir is just a metapackage.
   - name: mlir
     script: install_mlir.sh  # [unix]
     script: install_mlir.bat  # [win]
@@ -62,7 +65,6 @@ outputs:
 
   - name: libmlir{{ major_version }}
     script: install_libmlir.sh   # [unix]
-    script: install_libmlir.bat  # [win]
     build:
       run_exports:
         - {{ pin_subpackage("libmlir" ~ major_version, max_pin="x.x") }}   # [unix]

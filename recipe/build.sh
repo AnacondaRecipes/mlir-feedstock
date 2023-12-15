@@ -21,7 +21,7 @@ cmake ${CMAKE_ARGS} \
   -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_LIBRARY_PATH="${PREFIX}" \
   -DLLVM_ENABLE_RTTI=ON \
-  -DLLVM_EXTERNAL_LIT="${BUILD_PREFIX}/bin" \
+  -DLLVM_EXTERNAL_LIT="${BUILD_PREFIX}/bin/llvm-lit" \
   -DMLIR_INCLUDE_DOCS=OFF \
   -DMLIR_INCLUDE_TESTS=ON \
   -DMLIR_INCLUDE_INTEGRATION_TESTS=ON \
@@ -34,13 +34,14 @@ cmake ${CMAKE_ARGS} \
   ../mlir
 
 cmake --build . -- -j${CPU_COUNT}
-echo "${BUILD_PREFIX}/bin"
-ls -la "${BUILD_PREFIX}/bin"
-echo "${PREFIX}"
-ls -la "${PREFIX}"
+#echo ${BUILD_PREFIX}
+#ls -la "${BUILD_PREFIX}/bin"
+# is PREFIX the env or host directory?
+#echo ${PREFIX}
 
-#cp ${PREFIX}/bin/llvm-lit ./test/
+# this is where lit expects to find helper tools. Perhaps they should be put here while building llvm.
+cp ${PREFIX}/libexec/llvm/* ${PREFIX}/bin
 cmake --build . --target check-mlir -- -j${CPU_COUNT}
 
 cd ../mlir/test
-${PYTHON} llvm-lit -vv Transforms Analysis IR
+${PYTHON} ${BUILD_PREFIX}/bin/llvm-lit -vv Transforms Analysis IR
