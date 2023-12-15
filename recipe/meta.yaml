@@ -17,12 +17,10 @@ requirements:
     - cmake
     - ninja
     - {{ compiler('cxx') }}
-    - libcxx {{ cxx_compiler_version }}  # [osx]
   host:
     - llvmdev {{ version }}
     - llvm {{ version }}
     - zlib
-    - libcxx {{ cxx_compiler_version }}  # [osx]
 
 outputs:
   - name: mlir
@@ -41,11 +39,9 @@ outputs:
         - llvmdev {{ version }}
         - llvm {{ version }}
         - zlib
-        - libcxx {{ cxx_compiler_version }}  # [osx]
       run:
         - {{ pin_subpackage("libmlir", exact=True) }}
         - llvmdev {{ version }}
-        - libcxx >={{ cxx_compiler_version }}  # [osx]
     test:
       commands:
         # static library
@@ -76,14 +72,13 @@ outputs:
         - {{ compiler('cxx') }}
         - cmake
         - ninja
-        - libcxx {{ cxx_compiler_version }}  # [osx]
       host:
         - llvmdev {{ version }}
         - llvm {{ version }}
         - zlib
-        - libcxx {{ cxx_compiler_version }}  # [osx]
+        #- libcxx {{ cxx_compiler_version }}  # [osx]
       run:
-        - libcxx >={{ cxx_compiler_version }}  # [osx]
+        #- libcxx >={{ cxx_compiler_version }}  # [osx]
     test:
       commands:
         # presence of versioned libraries
@@ -119,18 +114,17 @@ outputs:
         - {{ compiler('cxx') }}
         - cmake
         - ninja
-        - libcxx {{ cxx_compiler_version }}  # [osx]
+        #- libcxx {{ cxx_compiler_version }}  # [osx]
       host:
         - llvmdev {{ version }}
         - llvm {{ version }}
         - zlib
         - {{ pin_subpackage("libmlir" ~ major_version, exact=True) }}  # [unix]
-        - libcxx {{ cxx_compiler_version }}  # [osx]
       run:
         - {{ pin_subpackage("libmlir" ~ major_version, exact=True) }}  # [unix]
         - libcxx >={{ cxx_compiler_version }}  # [osx]
         # this will probably be removed when the install scripts are tidied
-        - zlib # [win]
+        - zstd # [win]
     test:
       commands:
         # presence of unversioned libraries
