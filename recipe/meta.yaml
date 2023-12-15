@@ -42,6 +42,7 @@ outputs:
       run:
         - {{ pin_subpackage("libmlir", exact=True) }}
         - llvmdev {{ version }}
+        - libcxx >={{ cxx_compiler_version }}  # [osx and arm64]
     test:
       commands:
         # static library
@@ -78,7 +79,7 @@ outputs:
         - zlib
         #- libcxx {{ cxx_compiler_version }}  # [osx]
       run:
-        #- libcxx >={{ cxx_compiler_version }}  # [osx]
+        - libcxx >={{ cxx_compiler_version }}  # [osx and arm64]
     test:
       commands:
         # presence of versioned libraries
@@ -122,7 +123,7 @@ outputs:
         - {{ pin_subpackage("libmlir" ~ major_version, exact=True) }}  # [unix]
       run:
         - {{ pin_subpackage("libmlir" ~ major_version, exact=True) }}  # [unix]
-        - libcxx >={{ cxx_compiler_version }}  # [osx]
+        - libcxx >={{ cxx_compiler_version }}  # [osx and arm64]
         # this will probably be removed when the install scripts are tidied
         - zstd # [win]
     test:
