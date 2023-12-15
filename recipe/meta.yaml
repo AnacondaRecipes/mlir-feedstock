@@ -141,6 +141,12 @@ about:
   summary: Multi-Level IR Compiler Framework
   dev_url: https://github.com/llvm/llvm-project
   doc_url: https://llvm.org/docs/
+  description: |
+    a novel approach to building reusable and extensible
+    compiler infrastructure. MLIR aims to address software
+    fragmentation, improve compilation for heterogeneous hardware,
+    significantly reduce the cost of building domain specific
+    compilers, and aid in connecting existing compilers together.
 
 extra:
   recipe-maintainers:
@@ -151,3 +157,6 @@ extra:
     - xhochy
     - danpetry
   feedstock-name: mlir
+  skip-lints:
+    - should_use_compilers
+    - missing_tests
