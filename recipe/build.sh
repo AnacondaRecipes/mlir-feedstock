@@ -21,20 +21,26 @@ cmake ${CMAKE_ARGS} \
   -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_LIBRARY_PATH="${PREFIX}" \
   -DLLVM_ENABLE_RTTI=ON \
+  -DLLVM_EXTERNAL_LIT="${BUILD_PREFIX}/bin" \
   -DMLIR_INCLUDE_DOCS=OFF \
   -DMLIR_INCLUDE_TESTS=ON \
+  -DMLIR_INCLUDE_INTEGRATION_TESTS=ON \
   -DLLVM_BUILD_LLVM_DYLIB=ON \
   -DLLVM_LINK_LLVM_DYLIB=ON \
   -DLLVM_BUILD_TOOLS=ON \
   -DLLVM_BUILD_UTILS=ON \
   -DCMAKE_POLICY_DEFAULT_CMP0111=NEW \
-  -DLLVM_CCACHE_BUILD=ON \
   -GNinja \
   ../mlir
 
 cmake --build . -- -j${CPU_COUNT}
+echo "${BUILD_PREFIX}/bin"
+ls -la "${BUILD_PREFIX}/bin"
+echo "${PREFIX}"
+ls -la "${PREFIX}"
 
+#cp ${PREFIX}/bin/llvm-lit ./test/
 cmake --build . --target check-mlir -- -j${CPU_COUNT}
 
 cd ../mlir/test
-${PYTHON} ../../build/bin/llvm-lit -vv Transforms Analysis IR
+${PYTHON} llvm-lit -vv Transforms Analysis IR
