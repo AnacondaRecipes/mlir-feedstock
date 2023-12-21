@@ -8,8 +8,6 @@ package:
 source:
   - url: https://github.com/llvm/llvm-project/releases/download/llvmorg-{{ version.replace(".rc", "-rc") }}/llvm-project-{{ version.replace(".rc", "rc") }}.src.tar.xz
     sha256: 58a8818c60e6627064f312dbf46c02d9949956558340938b71cf731ad8bc0813
-    patches:
-      - patches/0001-get-test-dylibs-from-right-location.patch
 
 build:
   number: 0
@@ -22,8 +20,7 @@ requirements:
     # both of these required to run testing
     - lit     {{ version }}
     - llvmdev {{ version }}
-    - patch    # [not win]
-    - m2-patch # [win]
+    - python
   host:
     - llvmdev {{ version }}
     - llvm {{ version }}

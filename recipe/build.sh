@@ -24,8 +24,10 @@ cmake ${CMAKE_ARGS} \
   -DLLVM_EXTERNAL_LIT="${BUILD_PREFIX}/bin/llvm-lit" \
   -DMLIR_INCLUDE_DOCS=OFF \
   -DMLIR_INCLUDE_TESTS=ON \
-  -DMLIR_INCLUDE_INTEGRATION_TESTS=ON \
   -DLLVM_BUILD_LLVM_DYLIB=ON \
+  -DLLVM_CCACHE_BUILD=ON \
+  -DMLIR_INCLUDE_INTEGRATION_TESTS=ON \
+  -DLLVM_SHLIB_OUTPUT_INTDIR="${SRC_DIR}/build/lib" \
   -DLLVM_LINK_LLVM_DYLIB=ON \
   -DLLVM_BUILD_TOOLS=ON \
   -DLLVM_BUILD_UTILS=ON \
@@ -44,4 +46,5 @@ cp ${PREFIX}/libexec/llvm/* ${PREFIX}/bin
 cmake --build . --target check-mlir -- -j${CPU_COUNT}
 
 cd ../mlir/test
+cp ${SRC_DIR}/build/test/lit.site.cfg.py ./
 ${PYTHON} ${BUILD_PREFIX}/bin/llvm-lit -vv Transforms Analysis IR
