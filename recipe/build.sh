@@ -1,6 +1,7 @@
 #!/bin/bash
 
-set -euxo pipefail
+#set -euxo pipefail
+set -x
 
 if [[ "${target_platform}" == osx-* ]]; then
     CMAKE_ARGS="$CMAKE_ARGS -DLLVM_ENABLE_LIBCXX=ON"
