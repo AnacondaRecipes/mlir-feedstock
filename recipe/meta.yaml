@@ -24,7 +24,6 @@ requirements:
   host:
     - llvmdev {{ version }}
     - llvm {{ version }}
-    - zlib
 
 outputs:
   # On windows, libmlir contains everything and mlir is just a metapackage.
@@ -43,7 +42,6 @@ outputs:
         - {{ pin_subpackage("libmlir", exact=True) }}
         - llvmdev {{ version }}
         - llvm {{ version }}
-        - zlib
       run:
         - {{ pin_subpackage("libmlir", exact=True) }}
         - llvmdev {{ version }}
@@ -80,7 +78,6 @@ outputs:
       host:
         - llvmdev {{ version }}
         - llvm {{ version }}
-        - zlib
         #- libcxx {{ cxx_compiler_version }}  # [osx]
       run:
         - libcxx >={{ cxx_compiler_version }}  # [osx]
@@ -123,7 +120,6 @@ outputs:
       host:
         - llvmdev {{ version }}
         - llvm {{ version }}
-        - zlib
         - {{ pin_subpackage("libmlir" ~ major_version, exact=True) }}  # [unix]
       run:
         - {{ pin_subpackage("libmlir" ~ major_version, exact=True) }}  # [unix]
