@@ -35,10 +35,6 @@ cmake ${CMAKE_ARGS} \
   ../mlir
 
 cmake --build . -- -j${CPU_COUNT}
-#echo ${BUILD_PREFIX}
-#ls -la "${BUILD_PREFIX}/bin"
-# is PREFIX the env or host directory?
-#echo ${PREFIX}
 
 # this is where lit expects to find helper tools. Perhaps they should be put here while building llvm.
 cp ${PREFIX}/libexec/llvm/* ${PREFIX}/bin
