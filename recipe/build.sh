@@ -38,14 +38,25 @@ cmake ${CMAKE_ARGS} \
 
 cmake --build . -- -j${CPU_COUNT}
 
-# this is where lit expects to find helper tools. Perhaps they should be put here while building llvm.
-cp ${PREFIX}/libexec/llvm/* ${PREFIX}/bin
+# the helper tools used by lit are expected to be in ${PREFIX}/bin. Perhaps they should be put here while building llvm,
+# or maybe we can use LIT_OPTS or a CMake argument to do this better, see https://llvm.org/docs/CommandGuide/lit.html
+tools=(count FileCheck lli-child-target llvm-jitlink-executor llvm-PerfectShuffle not obj2yaml split-file UnicodeNameMappingGenerator yaml2obj yaml-bench bin)
+for tool in "${tools[@]}"; do
+    cp "${PREFIX}/libexec/llvm/${tool}" "${PREFIX}/bin/"
+done
+
 # We're currently passing despite failing tests; TODO is to come back and look at these failures
 # in more detail, and either fix or skip explicitly.
-# cmake --build . --target check-mlir -- -j${CPU_COUNT} || true
-# above doesn't pass despite failing tests, try this
-ninja -j${CPU_COUNT} check-mlir || true
+cmake --build . --target check-mlir -- -j${CPU_COUNT} || true
+
 
 cd ../mlir/test
 cp ${SRC_DIR}/build/test/lit.site.cfg.py ./
 ${PYTHON} ${BUILD_PREFIX}/bin/llvm-lit -vv Transforms Analysis IR || true
+
+# Clean up copied tools
+for tool in "${tools[@]}"; do
+    if [ -f "${PREFIX}/bin/${tool}" ]; then
+        rm -f "${PREFIX}/bin/${tool}"
+    fi
+done

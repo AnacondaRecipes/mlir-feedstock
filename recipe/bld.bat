@@ -20,9 +20,9 @@ if %ERRORLEVEL% neq 0 exit 1
 cmake --build . -- -j%CPU_COUNT%
 if %ERRORLEVEL% neq 0 exit 1
 
-REM this is where lit expects to find helper tools. Perhaps they should be put here while building llvm.
-cp %PREFIX%\libexec\llvm\* %PREFIX%\bin
 REM This test isn't working at the moment. Should be fixed.
+REM It could be that the required tools need to be copied to the
+REM directory where lit expects to find them, like on unix.
 REM cmake --build . --target check-mlir -- -j%CPU_COUNT%
 
 REM This one too.
