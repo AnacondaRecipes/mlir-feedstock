@@ -29,6 +29,8 @@ requirements:
   host:
     - llvmdev {{ version }}
     - llvm {{ version }}
+    - zlib # [win]
+    - zstd # [win]
 
 outputs:
   # On windows, libmlir contains everything and mlir is just a metapackage.
@@ -126,11 +128,11 @@ outputs:
         - llvmdev {{ version }}
         - llvm {{ version }}
         - {{ pin_subpackage("libmlir" ~ major_version, exact=True) }}  # [unix]
+        - zlib # [win]
+        - zstd # [win]
       run:
         - {{ pin_subpackage("libmlir" ~ major_version, exact=True) }}  # [unix]
         - libcxx >={{ cxx_compiler_version }}  # [osx]
-        - zlib # [win]
-        - zstd # [win]
     test:
       commands:
         # presence of unversioned libraries
