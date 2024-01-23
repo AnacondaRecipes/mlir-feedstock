@@ -17,6 +17,8 @@ fi
 mkdir -p build
 cd build
 
+# -DLLVM_SHLIB_OUTPUT_INTDIR="${SRC_DIR}/build/lib"
+# is required to find the utility dylibs required to run the tests.
 cmake ${CMAKE_ARGS} \
   -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
   -DCMAKE_BUILD_TYPE=Release \
