@@ -8,6 +8,9 @@ package:
 source:
   - url: https://github.com/llvm/llvm-project/releases/download/llvmorg-{{ version.replace(".rc", "-rc") }}/llvm-project-{{ version.replace(".rc", "rc") }}.src.tar.xz
     sha256: 58a8818c60e6627064f312dbf46c02d9949956558340938b71cf731ad8bc0813
+    patches:
+      # https://reviews.llvm.org/D99470
+      - 0001-Support-cross-compiling-standalone-MLIR.patch
 
 build:
   number: 0
@@ -17,6 +20,8 @@ requirements:
     - cmake
     - ninja
     - {{ compiler('cxx') }}
+    - patch       # [not win]
+    - m2-patch    # [win]
     # both of these required to run testing
     - lit     {{ version }}
     - llvmdev {{ version }}
