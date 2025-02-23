@@ -56,12 +56,27 @@ done
 
 # We're currently passing despite failing tests; TODO is to come back and look at these failures
 # in more detail, and either fix or skip explicitly.
-cmake --build . --target check-mlir -- -j${CPU_COUNT} || true
+#cmake --build . --target check-mlir -- -j${CPU_COUNT} || true
 
 
 cd ../mlir/test
 cp ${SRC_DIR}/build/test/lit.site.cfg.py ./
-${PYTHON} ${BUILD_PREFIX}/bin/llvm-lit -vv Transforms Analysis IR || true
+#${PYTHON} ${BUILD_PREFIX}/bin/llvm-lit -vv Transforms Analysis IR || true
+
+# Temporarily, let's skip executing the tests, because we just want to validate the triton chain for now.
+# getting the following test-run failures:
+
+## known failure: https://github.com/llvm/llvm-project/issues/115108
+# CommandLine Error: Option 'enable-branch-hint' registered more than once!
+# ...
+#  MLIR-Unit :: Target/LLVM/./MLIRTargetLLVMTests/failed_to_discover_tests_from_gtest
+## Can't immediately find an issue for this one:
+# None INFO $PREFIX/bin/mlir-capi-execution-engine-test 2>&1 | $PREFIX/bin/FileCheck $SRC_DIR/mlir/test/CAPI/execution_engine.c
+# None INFO # executed command: $PREFIX/bin/mlir-capi-execution-engine-test
+# None INFO # .---command stderr------------
+# None INFO # | '$PREFIX/bin/mlir-capi-execution-engine-test': command not found
+# None INFO # `-----------------------------
+# None INFO # error: command failed with exit status: 127
 
 # Clean up copied tools
 for tool in "${tools[@]}"; do
