@@ -77,6 +77,12 @@ cp ${SRC_DIR}/build/test/lit.site.cfg.py ./
 # None INFO # | '$PREFIX/bin/mlir-capi-execution-engine-test': command not found
 # None INFO # `-----------------------------
 # None INFO # error: command failed with exit status: 127
+# I also disabled the tests for libmlir_async_runtime.dylib/so presence, which may be related. See the following:
+# https://github.com/llvm/llvm-project/pull/87067
+# https://github.com/llvm/llvm-project/issues/53989
+# https://reviews.llvm.org/D117287
+# Again, can have a closer look when the triton chain is validated.
+
 
 # Clean up copied tools
 for tool in "${tools[@]}"; do
