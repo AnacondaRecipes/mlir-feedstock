@@ -112,13 +112,13 @@ outputs:
         - test -f $PREFIX/lib/libMLIR.so.{{ maj_min }}{{ extra }}                       # [linux]
         - test -f $PREFIX/lib/libmlir_runner_utils.so.{{ maj_min }}{{ extra }}          # [linux]
         - test -f $PREFIX/lib/libmlir_c_runner_utils.so.{{ maj_min }}{{ extra }}        # [linux]
-        #- test -f "$PREFIX/lib/libmlir_async_runtime.so.{{ major_version }}"       # [linux]
-        #- test -f "$PREFIX/lib/libmlir_float16_utils.so.{{ major_version }}"        # [linux]
+        - test -f "$PREFIX/lib/libmlir_async_runtime.so.{{ maj_min }}{{ extra }}"       # [linux]
+        - test -f "$PREFIX/lib/libmlir_float16_utils.so.{{ maj_min }}{{ extra }}"       # [linux]
         - test -f $PREFIX/lib/libMLIR.{{ maj_min }}{{ extra }}.dylib                    # [osx]
         - test -f $PREFIX/lib/libmlir_runner_utils.{{ maj_min }}{{ extra }}.dylib       # [osx]
         - test -f $PREFIX/lib/libmlir_c_runner_utils.{{ maj_min }}{{ extra }}.dylib     # [osx]
-        #- test -f "$PREFIX/lib/libmlir_async_runtime.{{ major_version }}.dylib"    # [osx]
-        #- test -f "$PREFIX/lib/libmlir_float16_utils.{{ major_version }}.dylib"     # [osx]
+        - test -f "$PREFIX/lib/libmlir_async_runtime.{{ maj_min }}{{ extra }}.dylib"    # [osx]
+        - test -f "$PREFIX/lib/libmlir_float16_utils.{{ maj_min }}{{ extra }}.dylib"    # [osx]
 
         # absence of unversioned libraries
         - test ! -f $PREFIX/lib/libMLIR$SHLIB_EXT                   # [unix]

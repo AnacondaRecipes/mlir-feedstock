@@ -28,6 +28,8 @@ mkdir -p build
 cd build
 # -DLLVM_SHLIB_OUTPUT_INTDIR="${SRC_DIR}/build/lib"
 # is required to find the utility dylibs required to run the tests.
+# LLVM_LINK_LLVM_DYLIB refers to how the tools link. They aren't packaged, and turning it off solves
+# https://github.com/llvm/llvm-project/issues/115108 which we encountered
 cmake ${CMAKE_ARGS} \
   -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
   -DCMAKE_BUILD_TYPE=Release \
@@ -39,7 +41,7 @@ cmake ${CMAKE_ARGS} \
   -DLLVM_BUILD_LLVM_DYLIB=ON \
   -DMLIR_INCLUDE_INTEGRATION_TESTS=ON \
   -DLLVM_SHLIB_OUTPUT_INTDIR="${SRC_DIR}/build/lib" \
-  -DLLVM_LINK_LLVM_DYLIB=ON \
+  -DLLVM_LINK_LLVM_DYLIB=OFF \
   -DLLVM_BUILD_TOOLS=ON \
   -DLLVM_BUILD_UTILS=ON \
   -GNinja \
@@ -56,33 +58,11 @@ done
 
 # We're currently passing despite failing tests; TODO is to come back and look at these failures
 # in more detail, and either fix or skip explicitly.
-#cmake --build . --target check-mlir -- -j${CPU_COUNT} || true
-
+cmake --build . --target check-mlir -- -j${CPU_COUNT} || true
 
 cd ../mlir/test
 cp ${SRC_DIR}/build/test/lit.site.cfg.py ./
-#${PYTHON} ${BUILD_PREFIX}/bin/llvm-lit -vv Transforms Analysis IR || true
-
-# Temporarily, let's skip executing the tests, because we just want to validate the triton chain for now.
-# getting the following test-run failures:
-
-## known failure: https://github.com/llvm/llvm-project/issues/115108
-# CommandLine Error: Option 'enable-branch-hint' registered more than once!
-# ...
-#  MLIR-Unit :: Target/LLVM/./MLIRTargetLLVMTests/failed_to_discover_tests_from_gtest
-## Can't immediately find an issue for this one:
-# None INFO $PREFIX/bin/mlir-capi-execution-engine-test 2>&1 | $PREFIX/bin/FileCheck $SRC_DIR/mlir/test/CAPI/execution_engine.c
-# None INFO # executed command: $PREFIX/bin/mlir-capi-execution-engine-test
-# None INFO # .---command stderr------------
-# None INFO # | '$PREFIX/bin/mlir-capi-execution-engine-test': command not found
-# None INFO # `-----------------------------
-# None INFO # error: command failed with exit status: 127
-# I also disabled the tests for libmlir_async_runtime.dylib/so presence, which may be related. See the following:
-# https://github.com/llvm/llvm-project/pull/87067
-# https://github.com/llvm/llvm-project/issues/53989
-# https://reviews.llvm.org/D117287
-# Again, can have a closer look when the triton chain is validated.
-
+${PYTHON} ${BUILD_PREFIX}/bin/llvm-lit -vv Transforms Analysis IR || true
 
 # Clean up copied tools
 for tool in "${tools[@]}"; do
