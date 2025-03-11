@@ -129,8 +129,8 @@ outputs:
         - test ! -f $PREFIX/lib/libmlir_runner_utils$SHLIB_EXT      # [unix]
         - test ! -f $PREFIX/lib/libmlir_c_runner_utils$SHLIB_EXT    # [unix]
         - test ! -f $PREFIX/lib/libmlir_c_runner_utils_static.a     # [unix]
-        - test ! -f "$PREFIX/lib/libmlir_async_runtime$SHLIB_EXT"     # [unix]
-        - test ! -f "$PREFIX/lib/libmlir_float16_utils$SHLIB_EXT"      # [unix]
+        - test ! -f "$PREFIX/lib/libmlir_async_runtime$SHLIB_EXT"   # [unix]
+        - test ! -f "$PREFIX/lib/libmlir_float16_utils$SHLIB_EXT"   # [unix]
 
   - name: libmlir
     script: install_libmlir.sh  # [unix]
