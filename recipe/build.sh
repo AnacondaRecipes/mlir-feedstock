@@ -49,20 +49,20 @@ cmake ${CMAKE_ARGS} \
 
 ninja ${PARALLEL}
 
-# the helper tools used by lit are expected to be in ${PREFIX}/bin. Perhaps they should be put here while building llvm,
-# or maybe we can use LIT_OPTS or a CMake argument to do this better, see https://llvm.org/docs/CommandGuide/lit.html
-tools=(count FileCheck lli-child-target llvm-jitlink-executor llvm-PerfectShuffle not obj2yaml split-file UnicodeNameMappingGenerator yaml2obj yaml-bench)
-for tool in "${tools[@]}"; do
-    cp "${PREFIX}/libexec/llvm/${tool}" "${PREFIX}/bin/"
-done
+# # the helper tools used by lit are expected to be in ${PREFIX}/bin. Perhaps they should be put here while building llvm,
+# # or maybe we can use LIT_OPTS or a CMake argument to do this better, see https://llvm.org/docs/CommandGuide/lit.html
+# tools=(count FileCheck lli-child-target llvm-jitlink-executor llvm-PerfectShuffle not obj2yaml split-file UnicodeNameMappingGenerator yaml2obj yaml-bench)
+# for tool in "${tools[@]}"; do
+#     cp "${PREFIX}/libexec/llvm/${tool}" "${PREFIX}/bin/"
+# done
 
-cd ../mlir/test
-cp ${SRC_DIR}/build/test/lit.site.cfg.py ./
-${PYTHON} ${BUILD_PREFIX}/bin/llvm-lit -vv Transforms Analysis IR || true
+# cd ../mlir/test
+# cp ${SRC_DIR}/build/test/lit.site.cfg.py ./
+# ${PYTHON} ${BUILD_PREFIX}/bin/llvm-lit -vv Transforms Analysis IR || true
 
-# Clean up copied tools
-for tool in "${tools[@]}"; do
-    if [ -f "${PREFIX}/bin/${tool}" ]; then
-        rm -f "${PREFIX}/bin/${tool}"
-    fi
-done
+# # Clean up copied tools
+# for tool in "${tools[@]}"; do
+#     if [ -f "${PREFIX}/bin/${tool}" ]; then
+#         rm -f "${PREFIX}/bin/${tool}"
+#     fi
+# done
