@@ -41,6 +41,8 @@ requirements:
     - llvm {{ version }}
     - zlib
     - zstd  # [win]
+    # to run lit-based tests
+    - python
 
 outputs:
   # On windows, libmlir contains everything and mlir is just a metapackage.
