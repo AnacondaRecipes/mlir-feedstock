@@ -1,16 +1,22 @@
-{% set version = "17.0.6" %}
+{% set version = "19.1.7" %}
 {% set major_version = version.split(".")[0] %}
+{% set tail_version = version.split(".")[-1] %}
+{% set maj_min = major_version ~ "." ~ version.split(".")[1] %}
+
+# as of LLVM 19, we expect an "-rcX" suffix for the release candidates
+{% set extra = "-" ~ tail_version if tail_version not in "0123456789" else "" %}
+{% set extra = "git" if tail_version|trim("0123456789") == "dev" else extra %}
 
 package:
   name: mlir-split
   version: {{ version }}
 
 source:
-  - url: https://github.com/llvm/llvm-project/releases/download/llvmorg-{{ version.replace(".rc", "-rc") }}/llvm-project-{{ version.replace(".rc", "rc") }}.src.tar.xz
-    sha256: 58a8818c60e6627064f312dbf46c02d9949956558340938b71cf731ad8bc0813
+  - url: https://github.com/llvm/llvm-project/archive/refs/tags/llvmorg-{{ version.replace(".rc", "-rc") }}.tar.gz
+    sha256: 59abea1c22e64933fad4de1671a61cdb934098793c7a31b333ff58dc41bff36c
     patches:
       # https://reviews.llvm.org/D99470
-      - 0001-Support-cross-compiling-standalone-MLIR.patch
+      - patches/0001-Support-cross-compiling-standalone-MLIR.patch
 
 build:
   number: 0
@@ -19,150 +25,132 @@ requirements:
   build:
     - cmake
     - ninja
+    - {{ stdlib('c') }}
     - {{ compiler('cxx') }}
-    - patch       # [not win]
-    - m2-patch    # [win]
-    # both of these required to run testing
-    - lit     {{ version }}
-    - llvmdev {{ version }}
-    - python
+    - llvmdev {{ version }}  # [build_platform != target_platform]
+    - zlib                   # [build_platform != target_platform]
   host:
     - llvmdev {{ version }}
     - llvm {{ version }}
-    - zlib # [win]
-    - zstd # [win]
+    - zlib
 
 outputs:
-  # On windows, libmlir contains everything and mlir is just a metapackage.
   - name: mlir
     script: install_mlir.sh  # [unix]
     script: install_mlir.bat  # [win]
     build:
-      missing_dso_whitelist:  # [linux and s390x]
-        - $RPATH/ld64.so.1    # [linux and s390x]
+      ignore_run_exports_from:
+        # the build fails if it doesn't find zlib, but it's not used
+        - zlib  # [unix]
     requirements:
       build:
+        - {{ stdlib('c') }}
         - {{ compiler('cxx') }}
         - cmake
         - ninja
+        - llvmdev {{ version }}    # [build_platform != target_platform]
       host:
         - {{ pin_subpackage("libmlir", exact=True) }}
         - llvmdev {{ version }}
         - llvm {{ version }}
+        - zlib
+        - zstd  # [win]
       run:
-        - {{ pin_subpackage("libmlir", exact=True) }}
         - llvmdev {{ version }}
-        - libcxx >={{ cxx_compiler_version }}  # [osx]
+        - {{ pin_subpackage("libmlir" ~ major_version, exact=True) }}   # [unix]
+        # we need to do this manually because clang_bootstrap has no run-export
+        - libcxx >={{ cxx_compiler_version }}                           # [osx]
     test:
       commands:
         # static library
-        - test -f "$PREFIX/lib/libMLIRIR.a"                       # [unix]
-        - if not exist %LIBRARY_LIB%\\MLIRIR.lib exit 1          # [win]
+        - test -f $PREFIX/lib/libMLIRIR.a                       # [unix]
+        - if not exist %LIBRARY_LIB%\MLIRIR.lib exit 1          # [win]
 
         # headers
-        - test -f "$PREFIX/include/mlir-c/Support.h"              # [unix]
-        - if not exist %LIBRARY_INC%\\mlir-c\\Support.h exit 1    # [win]
+        - test -f $PREFIX/include/mlir-c/Support.h              # [unix]
+        - if not exist %LIBRARY_INC%\mlir-c\Support.h exit 1    # [win]
 
         # binaries
         - mlir-tblgen -version
         - $PREFIX/bin/mlir-opt -version                         # [unix]
-        - if not exist "%LIBRARY_BIN%"\\mlir-opt.exe exit 1      # [win]
+        - if not exist "%LIBRARY_BIN%"\mlir-opt.exe exit 1      # [win]
         - mlir-opt -version                                     # [win]
 
   - name: libmlir{{ major_version }}
-    script: install_libmlir.sh   # [unix]
+    script: install_libmlir.sh  # [unix]
     build:
       run_exports:
         - {{ pin_subpackage("libmlir" ~ major_version, max_pin="x.x") }}   # [unix]
       skip: true  # [win]
-      missing_dso_whitelist:  # [s390x]
-        - $RPATH/ld64.so.1    # [s390x]
     requirements:
       build:
+        - {{ stdlib('c') }}
         - {{ compiler('cxx') }}
         - cmake
         - ninja
+        - llvmdev {{ version }}    # [build_platform != target_platform]
       host:
         - llvmdev {{ version }}
         - llvm {{ version }}
-        #- libcxx {{ cxx_compiler_version }}  # [osx]
       run:
-        - libcxx >={{ cxx_compiler_version }}  # [osx]
+        # we need to do this manually because clang_bootstrap has no run-export
+        - libcxx >={{ cxx_compiler_version }}   # [osx]
     test:
       commands:
         # presence of versioned libraries
-        - test -f "$PREFIX/lib/libMLIR.so.{{ major_version }}"                     # [linux]
-        - test -f "$PREFIX/lib/libmlir_runner_utils.so.{{ major_version }}"        # [linux]
-        - test -f "$PREFIX/lib/libmlir_c_runner_utils.so.{{ major_version }}"      # [linux]
-        - test -f "$PREFIX/lib/libmlir_async_runtime.so.{{ major_version }}"       # [linux]
-        - test -f "$PREFIX/lib/libmlir_float16_utils.so.{{ major_version }}"        # [linux]
-        - test -f "$PREFIX/lib/libMLIR.{{ major_version }}.dylib"                  # [osx]
-        - test -f "$PREFIX/lib/libmlir_runner_utils.{{ major_version }}.dylib"     # [osx]
-        - test -f "$PREFIX/lib/libmlir_c_runner_utils.{{ major_version }}.dylib"   # [osx]
-        - test -f "$PREFIX/lib/libmlir_async_runtime.{{ major_version }}.dylib"    # [osx]
-        - test -f "$PREFIX/lib/libmlir_float16_utils.{{ major_version }}.dylib"     # [osx]
+        - test -f $PREFIX/lib/libMLIR.so.{{ maj_min }}{{ extra }}                       # [linux]
+        - test -f $PREFIX/lib/libmlir_runner_utils.so.{{ maj_min }}{{ extra }}          # [linux]
+        - test -f $PREFIX/lib/libmlir_c_runner_utils.so.{{ maj_min }}{{ extra }}        # [linux]
+        - test -f $PREFIX/lib/libMLIR.{{ maj_min }}{{ extra }}.dylib                    # [osx]
+        - test -f $PREFIX/lib/libmlir_runner_utils.{{ maj_min }}{{ extra }}.dylib       # [osx]
+        - test -f $PREFIX/lib/libmlir_c_runner_utils.{{ maj_min }}{{ extra }}.dylib     # [osx]
 
         # absence of unversioned libraries
-        - test ! -f "$PREFIX/lib/libMLIR$SHLIB_EXT"                   # [unix]
-        - test ! -f "$PREFIX/lib/libmlir_runner_utils$SHLIB_EXT"      # [unix]
-        - test ! -f "$PREFIX/lib/libmlir_c_runner_utils$SHLIB_EXT"    # [unix]
-        - test ! -f "$PREFIX/lib/libmlir_c_runner_utils_static.a"     # [unix]
-        - test ! -f "$PREFIX/lib/libmlir_async_runtime$SHLIB_EXT"     # [unix]
-        - test ! -f "$PREFIX/lib/libmlir_float16_utils$SHLIB_EXT"      # [unix]
+        - test ! -f $PREFIX/lib/libMLIR$SHLIB_EXT                   # [unix]
+        - test ! -f $PREFIX/lib/libmlir_runner_utils$SHLIB_EXT      # [unix]
+        - test ! -f $PREFIX/lib/libmlir_c_runner_utils$SHLIB_EXT    # [unix]
+        - test ! -f $PREFIX/lib/libmlir_c_runner_utils_static.a     # [unix]
 
   - name: libmlir
-    script: install_libmlir.sh   # [unix]
-    script: install_libmlir.bat  # [win]
+    script: install_libmlir.sh  # [unix]
     build:
+      {% if not win %}
       run_exports:   # [unix]
         - {{ pin_subpackage("libmlir" ~ major_version, max_pin="x.x") }}   # [unix]
-      missing_dso_whitelist:  # [s390x]
-        - $RPATH/ld64.so.1    # [s390x]
+      {% endif %}
     requirements:
       build:
+        - {{ stdlib('c') }}
         - {{ compiler('cxx') }}
         - cmake
         - ninja
-        #- libcxx {{ cxx_compiler_version }}  # [osx]
+        - llvmdev {{ version }}    # [build_platform != target_platform]
       host:
         - llvmdev {{ version }}
         - llvm {{ version }}
         - {{ pin_subpackage("libmlir" ~ major_version, exact=True) }}  # [unix]
-        - zlib # [win]
-        - zstd # [win]
       run:
         - {{ pin_subpackage("libmlir" ~ major_version, exact=True) }}  # [unix]
-        - libcxx >={{ cxx_compiler_version }}  # [osx]
+        # we need to do this manually because clang_bootstrap has no run-export
+        - libcxx >={{ cxx_compiler_version }}                          # [osx]
     test:
       commands:
         # presence of unversioned libraries
-        - test -f "$PREFIX/lib/libMLIR${SHLIB_EXT}"       # [unix]
-        - if exist %LIBRARY_BIN%\\libmlir.dll exit 1     # [win]
+        - test -f $PREFIX/lib/libMLIR${SHLIB_EXT}       # [unix]
+        # nothing on windows (package currently empty)
+        - if exist %LIBRARY_BIN%\libmlir.dll exit 1     # [win]
 
 about:
-  home: https://llvm.org/
+  home: http://llvm.org/
   license: Apache-2.0 WITH LLVM-exception
   license_file: mlir/LICENSE.TXT
   license_family: Apache
   summary: Multi-Level IR Compiler Framework
-  dev_url: https://github.com/llvm/llvm-project
-  doc_url: https://llvm.org/docs/
-  description: |
-    a novel approach to building reusable and extensible
-    compiler infrastructure. MLIR aims to address software
-    fragmentation, improve compilation for heterogeneous hardware,
-    significantly reduce the cost of building domain specific
-    compilers, and aid in connecting existing compilers together.
 
 extra:
   recipe-maintainers:
     - h-vetinari
     - isuruf
     - kaushikcfd
-    - katietz
     - xhochy
-    - danpetry
   feedstock-name: mlir
-  skip-lints:
-    - should_use_compilers
-    - missing_tests
