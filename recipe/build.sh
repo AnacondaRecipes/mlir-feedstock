@@ -26,15 +26,43 @@ fi
 
 mkdir -p build
 cd build
-
+# -DLLVM_SHLIB_OUTPUT_INTDIR="${SRC_DIR}/build/lib"
+# is required to find the utility dylibs required to run the tests.
+# LLVM_LINK_LLVM_DYLIB refers to how the tools link. They aren't packaged, and turning it off solves
+# https://github.com/llvm/llvm-project/issues/115108 which we encountered
 cmake ${CMAKE_ARGS} \
   -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
   -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_LIBRARY_PATH="${PREFIX}" \
+  -DLLVM_ENABLE_RTTI=ON \
+  -DLLVM_EXTERNAL_LIT="${BUILD_PREFIX}/bin/llvm-lit" \
+  -DMLIR_INCLUDE_DOCS=OFF \
+  -DMLIR_INCLUDE_TESTS=ON \
   -DLLVM_BUILD_LLVM_DYLIB=ON \
-  -DLLVM_LINK_LLVM_DYLIB=ON \
+  -DMLIR_INCLUDE_INTEGRATION_TESTS=ON \
+  -DLLVM_SHLIB_OUTPUT_INTDIR="${SRC_DIR}/build/lib" \
+  -DLLVM_LINK_LLVM_DYLIB=OFF \
   -DLLVM_BUILD_TOOLS=ON \
   -DLLVM_BUILD_UTILS=ON \
   -GNinja \
   ../mlir
 
 ninja ${PARALLEL}
+
+# # the helper tools used by lit are expected to be in ${PREFIX}/bin. Perhaps they should be put here while building llvm,
+# # or maybe we can use LIT_OPTS or a CMake argument to do this better, see https://llvm.org/docs/CommandGuide/lit.html
+# tools=(count FileCheck lli-child-target llvm-jitlink-executor llvm-PerfectShuffle not obj2yaml split-file UnicodeNameMappingGenerator yaml2obj yaml-bench)
+# for tool in "${tools[@]}"; do
+#     cp "${PREFIX}/libexec/llvm/${tool}" "${PREFIX}/bin/"
+# done
+
+# cd ../mlir/test
+# cp ${SRC_DIR}/build/test/lit.site.cfg.py ./
+# ${PYTHON} ${BUILD_PREFIX}/bin/llvm-lit -vv Transforms Analysis IR || true
+
+# # Clean up copied tools
+# for tool in "${tools[@]}"; do
+#     if [ -f "${PREFIX}/bin/${tool}" ]; then
+#         rm -f "${PREFIX}/bin/${tool}"
+#     fi
+# done
