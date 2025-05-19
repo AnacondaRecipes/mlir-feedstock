@@ -1,4 +1,2 @@
-staging_channel_upload_target: llvm-17.0.6-stage2
-
 channels:
-  - https://staging.continuum.io/prefect/llvm-17.0.6-stage1-attempt-5
+  - https://staging.continuum.io/prefect/llvm-17.0.6-stage2
