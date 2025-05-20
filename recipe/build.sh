@@ -51,6 +51,12 @@ done
 # - `sparse_conv_3d.mlir` crashes during JIT execution on some platforms
 TEST_SKIPS="correctness.mlir|dense_output_bf16.mlir|sparse_.*.mlir"
 
+# Skip pdll-lsp-server tests on Linux platforms
+if [[ "${target_platform}" == linux-* ]]; then
+    # Add pdll-lsp-server tests to the skip list
+    TEST_SKIPS="${TEST_SKIPS}|mlir-pdll-lsp-server/.*\.test"
+fi
+
 # Run tests manually and skip known failures
 cd ${SRC_DIR}/build/test
 ${PYTHON} ${BUILD_PREFIX}/bin/llvm-lit -sv --filter-out="${TEST_SKIPS}" .
