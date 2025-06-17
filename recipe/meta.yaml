@@ -13,7 +13,7 @@ source:
       - 0001-Support-cross-compiling-standalone-MLIR.patch
 
 build:
-  number: 0
+  number: 1
 
 requirements:
   build:
@@ -25,7 +25,6 @@ requirements:
     # both of these required to run testing
     - lit     {{ version }}
     - llvmdev {{ version }}
-    - python
   host:
     - llvmdev {{ version }}
     - llvm {{ version }}
@@ -38,8 +37,6 @@ outputs:
     script: install_mlir.sh  # [unix]
     script: install_mlir.bat  # [win]
     build:
-      missing_dso_whitelist:  # [linux and s390x]
-        - $RPATH/ld64.so.1    # [linux and s390x]
     requirements:
       build:
         - {{ compiler('cxx') }}
@@ -75,8 +72,6 @@ outputs:
       run_exports:
         - {{ pin_subpackage("libmlir" ~ major_version, max_pin="x.x") }}   # [unix]
       skip: true  # [win]
-      missing_dso_whitelist:  # [s390x]
-        - $RPATH/ld64.so.1    # [s390x]
     requirements:
       build:
         - {{ compiler('cxx') }}
@@ -95,12 +90,12 @@ outputs:
         - test -f "$PREFIX/lib/libmlir_runner_utils.so.{{ major_version }}"        # [linux]
         - test -f "$PREFIX/lib/libmlir_c_runner_utils.so.{{ major_version }}"      # [linux]
         - test -f "$PREFIX/lib/libmlir_async_runtime.so.{{ major_version }}"       # [linux]
-        - test -f "$PREFIX/lib/libmlir_float16_utils.so.{{ major_version }}"        # [linux]
+        - test -f "$PREFIX/lib/libmlir_float16_utils.so.{{ major_version }}"       # [linux]
         - test -f "$PREFIX/lib/libMLIR.{{ major_version }}.dylib"                  # [osx]
         - test -f "$PREFIX/lib/libmlir_runner_utils.{{ major_version }}.dylib"     # [osx]
         - test -f "$PREFIX/lib/libmlir_c_runner_utils.{{ major_version }}.dylib"   # [osx]
         - test -f "$PREFIX/lib/libmlir_async_runtime.{{ major_version }}.dylib"    # [osx]
-        - test -f "$PREFIX/lib/libmlir_float16_utils.{{ major_version }}.dylib"     # [osx]
+        - test -f "$PREFIX/lib/libmlir_float16_utils.{{ major_version }}.dylib"    # [osx]
 
         # absence of unversioned libraries
         - test ! -f "$PREFIX/lib/libMLIR$SHLIB_EXT"                   # [unix]
@@ -108,7 +103,7 @@ outputs:
         - test ! -f "$PREFIX/lib/libmlir_c_runner_utils$SHLIB_EXT"    # [unix]
         - test ! -f "$PREFIX/lib/libmlir_c_runner_utils_static.a"     # [unix]
         - test ! -f "$PREFIX/lib/libmlir_async_runtime$SHLIB_EXT"     # [unix]
-        - test ! -f "$PREFIX/lib/libmlir_float16_utils$SHLIB_EXT"      # [unix]
+        - test ! -f "$PREFIX/lib/libmlir_float16_utils$SHLIB_EXT"     # [unix]
 
   - name: libmlir
     script: install_libmlir.sh   # [unix]
@@ -116,8 +111,6 @@ outputs:
     build:
       run_exports:   # [unix]
         - {{ pin_subpackage("libmlir" ~ major_version, max_pin="x.x") }}   # [unix]
-      missing_dso_whitelist:  # [s390x]
-        - $RPATH/ld64.so.1    # [s390x]
     requirements:
       build:
         - {{ compiler('cxx') }}
