@@ -1,8 +1,1 @@
-build_parameters:
-  - "--suppress-variables"
-  - "--error-overlinking"
-
 aggregate_check: false
-
-channels:
-  - https://staging.continuum.io/prefect/llvm-17.0.6-stage2
