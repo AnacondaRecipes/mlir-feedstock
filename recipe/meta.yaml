@@ -36,8 +36,8 @@ requirements:
   host:
     - llvmdev {{ version }}
     - llvm {{ version }}
-    - zlib
-    - zstd  # [win]
+    - zlib  {{ zlib }}
+    - zstd  {{ zstd }}
 
 outputs:
   # On windows, libmlir contains everything and mlir is just a metapackage.
@@ -58,11 +58,12 @@ outputs:
         - lit     {{ version }}
         - llvmdev {{ version }}
       host:
-        - {{ pin_subpackage("libmlir", exact=True) }}
+        - {{ pin_subpackage("libmlir", exact=True) }}  # [win]
+        - {{ pin_subpackage("libmlir" ~ major_version, exact=True) }}   # [unix]
         - llvmdev {{ version }}
         - llvm {{ version }}
-        - zlib
-        - zstd  # [win]
+        - zlib  {{ zlib }}
+        - zstd  {{ zstd }}
       run:
         - llvmdev {{ version }}
         - {{ pin_subpackage("libmlir", exact=True) }}  # [win]
