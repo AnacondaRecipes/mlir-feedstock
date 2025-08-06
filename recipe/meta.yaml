@@ -28,8 +28,6 @@ requirements:
     - ninja
     - {{ stdlib('c') }}
     - {{ compiler('cxx') }}
-    - patch       # [not win]
-    - m2-patch    # [win]
     # both of these required to run testing
     - lit     {{ version }}
     - llvmdev {{ version }}
