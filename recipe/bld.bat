@@ -14,6 +14,7 @@ cmake -GNinja ^
   -DMLIR_INCLUDE_INTEGRATION_TESTS=ON ^
   -DLLVM_BUILD_TOOLS=ON ^
   -DLLVM_BUILD_UTILS=ON ^
+  -DLLVM_UTILS_INSTALL_DIR=libexec\llvm ^
   ..\mlir
 if %ERRORLEVEL% neq 0 exit 1
 

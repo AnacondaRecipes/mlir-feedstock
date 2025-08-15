@@ -17,20 +17,17 @@ source:
     patches:
       # https://reviews.llvm.org/D99470
       - patches/0001-Support-cross-compiling-standalone-MLIR.patch
+      - patches/0002-fix-msvc-test-failure.patch  # [win]
 
 build:
-  number: 0
-  # only currently needed for pytorch on linux-64. Remove these when building the whole llvm suite
-  skip: True  # [not (linux and x86_64)]
+  number: 2
 
 requirements:
   build:
     - cmake
     - ninja
-    #- {{ stdlib('c') }}
+    - {{ stdlib('c') }}
     - {{ compiler('cxx') }}
-    - patch       # [not win]
-    - m2-patch    # [win]
     # both of these required to run testing
     - lit     {{ version }}
     - llvmdev {{ version }}
@@ -39,8 +36,8 @@ requirements:
   host:
     - llvmdev {{ version }}
     - llvm {{ version }}
-    - zlib
-    - zstd  # [win]
+    - zlib  {{ zlib }}
+    - zstd  {{ zstd }}
 
 outputs:
   # On windows, libmlir contains everything and mlir is just a metapackage.
@@ -48,27 +45,28 @@ outputs:
     script: install_mlir.sh  # [unix]
     script: install_mlir.bat  # [win]
     build:
-      missing_dso_whitelist:  # [linux and s390x]
-        - $RPATH/ld64.so.1    # [linux and s390x]
       ignore_run_exports_from:
         # the build fails if it doesn't find zlib, but it's not used
         - zlib  # [unix]
-      skip: True  # [not (linux and x86_64)]
     requirements:
       build:
-        #- {{ stdlib('c') }}
+        - {{ stdlib('c') }}
         - {{ compiler('cxx') }}
         - cmake
         - ninja
-        - llvmdev {{ version }}    # [build_platform != target_platform]
+        # both of these required to run testing
+        - lit     {{ version }}
+        - llvmdev {{ version }}
       host:
-        - {{ pin_subpackage("libmlir", exact=True) }}
+        - {{ pin_subpackage("libmlir", exact=True) }}  # [win]
+        - {{ pin_subpackage("libmlir" ~ major_version, exact=True) }}   # [unix]
         - llvmdev {{ version }}
         - llvm {{ version }}
-        - zlib
-        - zstd  # [win]
+        - zlib  {{ zlib }}
+        - zstd  {{ zstd }}
       run:
         - llvmdev {{ version }}
+        - {{ pin_subpackage("libmlir", exact=True) }}  # [win]
         - {{ pin_subpackage("libmlir" ~ major_version, exact=True) }}   # [unix]
         # we need to do this manually because clang_bootstrap has no run-export
         - libcxx >={{ cxx_compiler_version }}                           # [osx]
@@ -94,12 +92,9 @@ outputs:
       run_exports:
         - {{ pin_subpackage("libmlir" ~ major_version, max_pin="x.x") }}   # [unix]
       skip: true  # [win]
-      skip: True  # [not (linux and x86_64)]
-      missing_dso_whitelist:  # [s390x]
-        - $RPATH/ld64.so.1    # [s390x]
     requirements:
       build:
-        #- {{ stdlib('c') }}
+        - {{ stdlib('c') }}
         - {{ compiler('cxx') }}
         - cmake
         - ninja
@@ -138,12 +133,9 @@ outputs:
     build:
       run_exports:   # [unix]
         - {{ pin_subpackage("libmlir" ~ major_version, max_pin="x.x") }}   # [unix]
-      missing_dso_whitelist:  # [s390x]
-        - $RPATH/ld64.so.1    # [s390x]
-      skip: True  # [not (linux and x86_64)]
     requirements:
       build:
-        #- {{ stdlib('c') }}
+        - {{ stdlib('c') }}
         - {{ compiler('cxx') }}
         - cmake
         - ninja
