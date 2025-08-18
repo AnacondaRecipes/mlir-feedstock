@@ -1,4 +1,5 @@
-staging_channel_upload_target: llvm-20.1.8-stage0-build-1
+staging_channel_upload_target: llvm-20.1.8-stage1-build-0
 
 channels:
+  - https://staging.continuum.io/prefect/llvm-20.1.8-stage1-build-0
   - https://staging.continuum.io/prefect/llvm-20.1.8-stage0-build-1
