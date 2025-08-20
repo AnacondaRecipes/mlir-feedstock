@@ -1,4 +1,4 @@
-{% set version = "19.1.7" %}
+{% set version = "20.1.8" %}
 {% set major_version = version.split(".")[0] %}
 {% set tail_version = version.split(".")[-1] %}
 {% set maj_min = major_version ~ "." ~ version.split(".")[1] %}
@@ -13,14 +13,13 @@ package:
 
 source:
   - url: https://github.com/llvm/llvm-project/archive/refs/tags/llvmorg-{{ version.replace(".rc", "-rc") }}.tar.gz
-    sha256: 59abea1c22e64933fad4de1671a61cdb934098793c7a31b333ff58dc41bff36c
+    sha256: a6cbad9b2243b17e87795817cfff2107d113543a12486586f8a055a2bb044963
     patches:
       # https://reviews.llvm.org/D99470
       - patches/0001-Support-cross-compiling-standalone-MLIR.patch
-      - patches/0002-fix-msvc-test-failure.patch  # [win]
 
 build:
-  number: 2
+  number: 0
 
 requirements:
   build:
