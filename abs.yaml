@@ -1,4 +1,5 @@
 build_parameters:
   - "--suppress-variables"
   - "--error-overlinking"
-  - "-c https://staging.continuum.io/prefect/llvm-19.1.7-stage2-build-4"
+  - "-c https://staging.continuum.io/prefect/llvm-20.1.8-stage2-build-0"
+
