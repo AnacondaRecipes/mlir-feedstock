@@ -1,4 +1,4 @@
-{% set version = "20.1.8" %}
+{% set version = "21.1.6" %}
 {% set major_version = version.split(".")[0] %}
 {% set tail_version = version.split(".")[-1] %}
 {% set maj_min = major_version ~ "." ~ version.split(".")[1] %}
@@ -13,7 +13,7 @@ package:
 
 source:
   - url: https://github.com/llvm/llvm-project/archive/refs/tags/llvmorg-{{ version.replace(".rc", "-rc") }}.tar.gz
-    sha256: a6cbad9b2243b17e87795817cfff2107d113543a12486586f8a055a2bb044963
+    sha256: 2380973eb435b48bd70881939da3629069009a851c81676dfb211a1b068d72a6
     patches:
       # https://reviews.llvm.org/D99470
       - patches/0001-Support-cross-compiling-standalone-MLIR.patch
@@ -27,16 +27,12 @@ requirements:
     - ninja
     - {{ stdlib('c') }}
     - {{ compiler('cxx') }}
-    # both of these required to run testing
-    - lit     {{ version }}
-    - llvmdev {{ version }}
-    - python
+    - llvmdev {{ version }}  # [build_platform != target_platform]
     - zlib                   # [build_platform != target_platform]
   host:
     - llvmdev {{ version }}
     - llvm {{ version }}
-    - zlib  {{ zlib }}
-    - zstd  {{ zstd }}
+    - zlib
 
 outputs:
   # On windows, libmlir contains everything and mlir is just a metapackage.
@@ -53,16 +49,13 @@ outputs:
         - {{ compiler('cxx') }}
         - cmake
         - ninja
-        # both of these required to run testing
-        - lit     {{ version }}
-        - llvmdev {{ version }}
+        - llvmdev {{ version }}    # [build_platform != target_platform]
       host:
-        - {{ pin_subpackage("libmlir", exact=True) }}  # [win]
-        - {{ pin_subpackage("libmlir" ~ major_version, exact=True) }}   # [unix]
+        - {{ pin_subpackage("libmlir", exact=True) }}
         - llvmdev {{ version }}
         - llvm {{ version }}
-        - zlib  {{ zlib }}
-        - zstd  {{ zstd }}
+        - zlib
+        - zstd  # [win]
       run:
         - llvmdev {{ version }}
         - {{ pin_subpackage("libmlir", exact=True) }}  # [win]
