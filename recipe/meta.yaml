@@ -27,12 +27,16 @@ requirements:
     - ninja
     - {{ stdlib('c') }}
     - {{ compiler('cxx') }}
-    - llvmdev {{ version }}  # [build_platform != target_platform]
+    # both of these required to run testing
+    - lit     {{ version }}
+    - llvmdev {{ version }}
+    - python
     - zlib                   # [build_platform != target_platform]
   host:
     - llvmdev {{ version }}
     - llvm {{ version }}
-    - zlib
+    - zlib  {{ zlib }}
+    - zstd  {{ zstd }}
 
 outputs:
   # On windows, libmlir contains everything and mlir is just a metapackage.
@@ -49,13 +53,16 @@ outputs:
         - {{ compiler('cxx') }}
         - cmake
         - ninja
-        - llvmdev {{ version }}    # [build_platform != target_platform]
+        # both of these required to run testing
+        - lit     {{ version }}
+        - llvmdev {{ version }}
       host:
-        - {{ pin_subpackage("libmlir", exact=True) }}
+        - {{ pin_subpackage("libmlir", exact=True) }}  # [win]
+        - {{ pin_subpackage("libmlir" ~ major_version, exact=True) }}   # [unix]
         - llvmdev {{ version }}
         - llvm {{ version }}
-        - zlib
-        - zstd  # [win]
+        - zlib  {{ zlib }}
+        - zstd  {{ zstd }}
       run:
         - llvmdev {{ version }}
         - {{ pin_subpackage("libmlir", exact=True) }}  # [win]
