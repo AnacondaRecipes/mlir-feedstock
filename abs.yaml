@@ -2,7 +2,7 @@ build_parameters:
   - "--suppress-variables"
   - "--error-overlinking"
 
-# Build against LLVM 21 Stage 2 output
+# Build against LLVM 21 Stage 2 output (re-trigger)
 channels:
   - https://staging.continuum.io/prefect/llvm-21.1.8-stage2-build-0
 
