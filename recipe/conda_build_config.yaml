@@ -3,10 +3,11 @@ c_compiler:             # [osx]
 cxx_compiler:           # [osx]
   - clang_bootstrap     # [osx]
 
+# Note: Must use LLVM 20 compiler because clang_bootstrap 21 doesn't exist yet
 c_compiler_version:   # [osx]
-  - 21.1.8            # [osx]
+  - 20.1.8            # [osx]
 cxx_compiler_version: # [osx]
-  - 21.1.8            # [osx]
+  - 20.1.8            # [osx]
 
 # Keep consistent with llvmdev and clangdev
 c_compiler:        # [win]
