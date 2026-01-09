@@ -1,12 +1,4 @@
-aggregate_check: false
-
 build_parameters:
   - "--suppress-variables"
   - "--error-overlinking"
-
-staging_channel_upload_target: llvm-21.1.8-stage2-build-0
-
-# Build against LLVM 21 Stage 2 output
-channels:
-  - https://staging.continuum.io/prefect/llvm-21.1.8-stage2-build-0
-
+  - "-c https://staging.continuum.io/prefect/llvm-21.1.8-stage2-build-0"
