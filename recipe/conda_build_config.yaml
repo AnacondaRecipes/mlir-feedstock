@@ -1,15 +1,11 @@
+# Use clang_bootstrap for macOS self-hosted builds
 c_compiler:
   - clang_bootstrap     # [osx]
-  - vs2022              # [win]
 cxx_compiler:
   - clang_bootstrap     # [osx]
-  - vs2022              # [win]
 
 # Stage 2: Build with clang 21 compiler
 c_compiler_version:   # [osx]
   - 21.1.8            # [osx]
 cxx_compiler_version: # [osx]
   - 21.1.8            # [osx]
-
-c_stdlib_version:  # [win]
-  - 2022.14        # [win]
