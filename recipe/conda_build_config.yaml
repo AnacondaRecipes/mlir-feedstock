@@ -1,7 +1,15 @@
 c_compiler:             # [osx]
   - clang_bootstrap     # [osx]
 cxx_compiler:           # [osx]
-  - clang_bootstrap     # [osx]
+c_compiler: 
+- clang_bootstrap     # [osx]
+- vs2022  # [win]
+- gcc  # [linux]
+
+cxx_compiler:  
+- clang_bootstrap     # [osx]
+- vs2022  # [win]
+- gxx  # [linux]
 
 # Stage 2: Build with clang 21 compiler
 c_compiler_version:   # [osx]
