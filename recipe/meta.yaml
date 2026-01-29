@@ -24,7 +24,7 @@ build:
 requirements:
   build:
     - cmake
-    - ninja
+    - ninja-base
     - {{ stdlib('c') }}
     - {{ compiler('cxx') }}
     # both of these required to run testing
