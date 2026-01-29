@@ -2,11 +2,13 @@
 mkdir build
 cd build
 
+@REM LLVM_USE_INTEL_JITEVENTS requires Intel VTune libraries which are not
+@REM available in the build environment, so we disable it to avoid build errors.
 cmake -GNinja ^
   -DCMAKE_BUILD_TYPE=Release ^
   -DCMAKE_PREFIX_PATH=%LIBRARY_PREFIX% ^
   -DCMAKE_INSTALL_PREFIX=%LIBRARY_PREFIX% ^
-  -DLLVM_USE_INTEL_JITEVENTS=ON ^
+  -DLLVM_USE_INTEL_JITEVENTS=OFF ^
   -DLLVM_ENABLE_RTTI=ON ^
   -DLLVM_EXTERNAL_LIT=%BUILD_PREFIX%\bin\llvm-lit ^
   -DMLIR_INCLUDE_DOCS=OFF ^

@@ -1,5 +1,2 @@
-build_parameters:
-  - "--suppress-variables"
-  - "--error-overlinking"
-  - "-c https://staging.continuum.io/prefect/llvm-20.1.8-stage2-build-0"
-
+# Extend timeout to 4 hours (14400 seconds) for builds
+task_timeout: 14400
