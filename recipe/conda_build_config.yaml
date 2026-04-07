@@ -4,8 +4,8 @@ c_compiler:
 cxx_compiler:
   - clang_bootstrap     # [osx]
 
-# Stage 2: Build with clang 21 compiler
+# Build with clang 22 compiler
 c_compiler_version:
-  - 21.1.8              # [osx]
+  - 22.1.2              # [osx]
 cxx_compiler_version:
-  - 21.1.8              # [osx]
+  - 22.1.2              # [osx]
