@@ -7,6 +7,8 @@
 {% set extra = "-" ~ tail_version if tail_version not in "0123456789" else "" %}
 {% set extra = "git" if tail_version|trim("0123456789") == "dev" else extra %}
 
+# LLVM 22 update: see install_mlir.sh for LIT_FILTER_OUT changes
+# (additional Target/LLVMIR tests segfault on osx-arm64 with shared-lib MLIR)
 package:
   name: mlir-split
   version: {{ version }}
