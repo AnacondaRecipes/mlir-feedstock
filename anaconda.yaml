@@ -8,5 +8,4 @@ upstream_sources:
       to_pattern: \1
     packages:
       - libmlir
-      - libmlir22
       - mlir
