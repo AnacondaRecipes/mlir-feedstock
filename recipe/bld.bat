@@ -2,11 +2,18 @@
 mkdir build
 cd build
 
+@REM LLVM_USE_INTEL_JITEVENTS requires Intel VTune (ittnotify), unsupported on
+@REM Windows ARM64; must match llvmdev's setting so mlir-runner links correctly.
+set "INTEL_JITEVENTS=ON"
+if /I "%TARGET_PLATFORM%"=="win-arm64" set "INTEL_JITEVENTS=OFF"
+
+@REM CMAKE_POLICY_VERSION_MINIMUM=3.5 for CMake 4 (main has cmake 4.x).
 cmake -GNinja ^
   -DCMAKE_BUILD_TYPE=Release ^
   -DCMAKE_PREFIX_PATH=%LIBRARY_PREFIX% ^
   -DCMAKE_INSTALL_PREFIX=%LIBRARY_PREFIX% ^
-  -DLLVM_USE_INTEL_JITEVENTS=ON ^
+  -DLLVM_USE_INTEL_JITEVENTS=%INTEL_JITEVENTS% ^
+  -DCMAKE_POLICY_VERSION_MINIMUM=3.5 ^
   -DLLVM_ENABLE_RTTI=ON ^
   -DLLVM_EXTERNAL_LIT=%BUILD_PREFIX%\bin\llvm-lit ^
   -DMLIR_INCLUDE_DOCS=OFF ^
