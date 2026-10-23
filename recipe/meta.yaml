@@ -1,4 +1,4 @@
-{% set version = "22.1.2" %}
+{% set version = "23.1.4" %}
 {% set major_version = version.split(".")[0] %}
 {% set tail_version = version.split(".")[-1] %}
 {% set maj_min = major_version ~ "." ~ version.split(".")[1] %}
@@ -7,21 +7,21 @@
 {% set extra = "-" ~ tail_version if tail_version not in "0123456789" else "" %}
 {% set extra = "git" if tail_version|trim("0123456789") == "dev" else extra %}
 
-# LLVM 22 update: see install_mlir.sh for LIT_FILTER_OUT changes
-# (additional Target/LLVMIR tests segfault on osx-arm64 with shared-lib MLIR)
+# see install_mlir.sh for LIT_FILTER_OUT (Target/LLVMIR tests that segfault on osx-arm64
+# with shared-lib MLIR, since LLVM 22)
 package:
   name: mlir-split
   version: {{ version }}
 
 source:
   - url: https://github.com/llvm/llvm-project/archive/refs/tags/llvmorg-{{ version.replace(".rc", "-rc") }}.tar.gz
-    sha256: a252efd7a4a268d2cc5145b17adcaa82757fdee1d06d748b4c24137807710ecb
+    sha256: 3e1c70b30f623976c2046d94b8eeab6cac536f107914cb4ed7bac572a03131db
     patches:
       # https://reviews.llvm.org/D99470
       - patches/0001-Support-cross-compiling-standalone-MLIR.patch
 
 build:
-  number: 1
+  number: 0
 
 requirements:
   build:
@@ -54,7 +54,7 @@ outputs:
         - {{ stdlib('c') }}
         - {{ compiler('cxx') }}
         - cmake
-        - ninja
+        - ninja-base
         # both of these required to run testing
         - lit     {{ version }}
         - llvmdev {{ version }}
@@ -98,7 +98,7 @@ outputs:
         - {{ stdlib('c') }}
         - {{ compiler('cxx') }}
         - cmake
-        - ninja
+        - ninja-base
         - llvmdev {{ version }}    # [build_platform != target_platform]
       host:
         - llvmdev {{ version }}
@@ -139,14 +139,14 @@ outputs:
         - {{ stdlib('c') }}
         - {{ compiler('cxx') }}
         - cmake
-        - ninja
+        - ninja-base
         - llvmdev {{ version }}    # [build_platform != target_platform]
       host:
         - llvmdev {{ version }}
         - llvm {{ version }}
         - {{ pin_subpackage("libmlir" ~ major_version, exact=True) }}  # [unix]
-        - zlib # [win]
-        - zstd # [win]
+        - zlib  {{ zlib }}  # [win]
+        - zstd  {{ zstd }}  # [win]
       run:
         - {{ pin_subpackage("libmlir" ~ major_version, exact=True) }}  # [unix]
         # we need to do this manually because clang_bootstrap has no run-export
