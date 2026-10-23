@@ -35,6 +35,9 @@ requirements:
     - python
     - zlib                   # [build_platform != target_platform]
   host:
+    # clang_bootstrap brings no libcxx-devel; without it -lc++ resolves to the SDK's libc++
+    # and the libraries load the system /usr/lib/libc++.1.dylib instead of conda's libc++
+    - libcxx-devel {{ cxx_compiler_version }}  # [osx]
     - llvmdev {{ version }}
     - llvm {{ version }}
     - zlib  {{ zlib }}
@@ -61,6 +64,7 @@ outputs:
       host:
         - {{ pin_subpackage("libmlir", exact=True) }}  # [win]
         - {{ pin_subpackage("libmlir" ~ major_version, exact=True) }}   # [unix]
+        - libcxx-devel {{ cxx_compiler_version }}  # [osx]
         - llvmdev {{ version }}
         - llvm {{ version }}
         - zlib  {{ zlib }}
@@ -101,6 +105,7 @@ outputs:
         - ninja-base
         - llvmdev {{ version }}    # [build_platform != target_platform]
       host:
+        - libcxx-devel {{ cxx_compiler_version }}  # [osx]
         - llvmdev {{ version }}
         - llvm {{ version }}
       run:
@@ -119,6 +124,11 @@ outputs:
         - test -f $PREFIX/lib/libmlir_c_runner_utils.{{ maj_min }}{{ extra }}.dylib     # [osx]
         - test -f "$PREFIX/lib/libmlir_async_runtime.{{ maj_min }}{{ extra }}.dylib"    # [osx]
         - test -f "$PREFIX/lib/libmlir_float16_utils.{{ maj_min }}{{ extra }}.dylib"    # [osx]
+
+        # linked against conda's libc++, not the system one
+        - LC_ALL=C grep -aq "@rpath/libc++.1.dylib" $PREFIX/lib/libMLIR.{{ maj_min }}{{ extra }}.dylib                 # [osx]
+        - LC_ALL=C grep -aq "@rpath/libc++.1.dylib" $PREFIX/lib/libmlir_c_runner_utils.{{ maj_min }}{{ extra }}.dylib  # [osx]
+        - test -z "$(LC_ALL=C grep -al /usr/lib/libc++.1.dylib $PREFIX/lib/libMLIR.{{ maj_min }}{{ extra }}.dylib)"    # [osx]
 
         # absence of unversioned libraries
         - test ! -f $PREFIX/lib/libMLIR$SHLIB_EXT                   # [unix]
@@ -142,6 +152,7 @@ outputs:
         - ninja-base
         - llvmdev {{ version }}    # [build_platform != target_platform]
       host:
+        - libcxx-devel {{ cxx_compiler_version }}  # [osx]
         - llvmdev {{ version }}
         - llvm {{ version }}
         - {{ pin_subpackage("libmlir" ~ major_version, exact=True) }}  # [unix]
@@ -155,7 +166,7 @@ outputs:
       commands:
         # presence of unversioned libraries
         - test -f $PREFIX/lib/libMLIR${SHLIB_EXT}       # [unix]
-        # nothing on windows (package currently empty)
+        # windows: no monolithic MLIR DLL (static libraries and tools only)
         - if exist %LIBRARY_BIN%\libmlir.dll exit 1     # [win]
 
 about:
@@ -182,5 +193,7 @@ extra:
     - danpetry
   feedstock-name: mlir
   skip-lints:
+    # fires on host `llvm` (the LLVM libraries/CMake package, not used as a compiler)
     - should_use_compilers
+    # the linter cannot resolve the output name libmlir{{ major_version }}; that output has tests
     - missing_tests
