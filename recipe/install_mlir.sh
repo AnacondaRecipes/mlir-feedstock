@@ -20,6 +20,13 @@ done
 # shared-library build is used for MLIR). Skip the specific failing tests.
 export LIT_FILTER_OUT='MLIRTargetLLVMTests|Target/LLVMIR/Import/test\.ll|Target/LLVMIR/test\.mlir'
 
+# LLVM 23 folds math.sincos with the build machine's sinf: the CI worker's macOS libm returns
+# sin(1.0f) one ULP above the correctly rounded value, which prints as 8.414710e-01 and misses
+# the `0.84...` CHECK in Dialect/Math/canonicalize.mlir (llvm-project#194130); osx only
+if [[ "${target_platform}" == osx-* ]]; then
+    export LIT_FILTER_OUT="${LIT_FILTER_OUT}|Dialect/Math/canonicalize\.mlir"
+fi
+
 # This target doesn't get built, but does get ran. Build it manually.
 ninja mlir-capi-execution-engine-test
 
