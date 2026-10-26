@@ -4,8 +4,8 @@ c_compiler:
 cxx_compiler:
   - clang_bootstrap     # [osx]
 
-# Build with clang 22 compiler
+# Build with the clang 23 compiler (LLVM 23 chain: after clang-compiler-activation 23)
 c_compiler_version:
-  - 22.1.2              # [osx]
+  - 23.1.4              # [osx]
 cxx_compiler_version:
-  - 22.1.2              # [osx]
+  - 23.1.4              # [osx]

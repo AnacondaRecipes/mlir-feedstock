@@ -8,20 +8,20 @@ Subject: [PATCH] Support cross compiling standalone MLIR
  1 file changed, 13 insertions(+)
 
 diff --git a/mlir/CMakeLists.txt b/mlir/CMakeLists.txt
-index ab690b16a4..f00c819b25 100644
+index ec4b8f7..c33a1e5 100644
 --- a/mlir/CMakeLists.txt
 +++ b/mlir/CMakeLists.txt
-@@ -42,6 +42,7 @@ if(MLIR_STANDALONE_BUILD)
-   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/bin")
- 
+@@ -54,6 +54,7 @@ if(MLIR_STANDALONE_BUILD)
+     set(LLVM_SHLIB_OUTPUT_INTDIR ${LLVM_LIBRARY_OUTPUT_INTDIR})
+   endif()
    set(LLVM_LIT_ARGS "-sv" CACHE STRING "Default options for lit")
 +  set(MLIR_BUILT_STANDALONE 1)
  endif()
  
  set(MLIR_TOOLS_INSTALL_DIR "${CMAKE_INSTALL_BINDIR}" CACHE PATH
-@@ -163,6 +164,18 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
- include_directories( "include")
- include_directories( ${MLIR_INCLUDE_DIR})
+@@ -248,6 +249,18 @@ include_directories(BEFORE
+   ${MLIR_INCLUDE_DIR}
+   )
  
 +if(CMAKE_CROSSCOMPILING AND MLIR_BUILT_STANDALONE)
 +  set(LLVM_USE_HOST_TOOLS ON)
@@ -38,6 +38,3 @@ index ab690b16a4..f00c819b25 100644
  # Adding tools/mlir-tblgen here as calling add_tablegen sets some variables like
  # MLIR_TABLEGEN_EXE in PARENT_SCOPE which gets lost if that folder is included
  # from another directory like tools
--- 
-2.38.1.windows.1
-
